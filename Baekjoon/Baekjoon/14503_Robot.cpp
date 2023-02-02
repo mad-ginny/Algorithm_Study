@@ -1,4 +1,4 @@
-﻿// [문제] 
+// [문제] 
 // 로봇 청소기가 주어졌을 때, 청소하는 영역의 개수를 구하는 프로그램을 작성하시오.
 
 // 로봇 청소기가 있는 장소는 N×M 크기의 직사각형으로 나타낼 수 있으며, 
@@ -39,8 +39,8 @@ int main(void) {
 
     // 방 크기 입력 및 생성
     room = new int* [n];
-    for (int i = 0; i < m; i += 1) {
-        room[i] = new int[m] { 0, };
+    for (int i = 0; i < n; i += 1) {
+        room[i] = new int[n];
     }
 
     // 청소할 방 입력받기
@@ -58,11 +58,52 @@ int main(void) {
     //청소한 칸 개수
     int cnt = 1;
 
-    int stop = 0;
-    while (stop == 0) {
+    bool stop = true;
+    while (stop) {
 
-        int fail = 0;
-        // 탐색
+        int seek = 0;
+        int new_rx, new_ry;
+        int back_rx, back_ry;
+
+        // 탐색(try2)
+        while (seek != 15) {
+            // 왼쪽 방향에 있는 칸
+            if (d == 0) { new_rx = rx; new_ry = ry - 1; }
+            else if (d == 1) { new_rx = rx - 1; new_ry = ry; }
+            else if (d == 2) { new_rx = rx; new_ry = ry + 1; }
+            else { new_rx = rx + 1; new_ry = ry; }
+            d = (d + 3) % 4;  // 왼쪽 방향
+            seek |= (1 << d);
+
+            if (room[new_rx - 1][new_ry - 1] == 0) { //확인
+                rx = new_rx; ry = new_ry; // 전진
+                cnt += 1; //청소
+                room[rx - 1][ry - 1] = 2; //청소한 곳 기록
+
+                cout << "cleaned: (" << rx << ", " << ry << ")" << endl;
+                break;
+            }
+
+        }
+        if(seek == 15) {
+            // 뒤쪽 칸
+           if (d == 0) { back_rx = rx + 1; back_ry = ry; }
+           else if (d == 1) { back_rx = rx; back_ry = ry - 1; }
+           else if (d == 2) { back_rx = rx - 1; back_ry = ry; }
+           else { back_rx = rx; back_ry = ry + 1; }
+
+           // 네 방향 모두 청소가 이미 되어있거나 벽인 경우에는, 바라보는 방향을 유지한 채로 한 칸 후진을 하고 2번으로 돌아간다.
+           if (room[back_rx - 1][back_ry - 1] != 1) {
+              rx = back_rx; ry = back_ry; // 후진
+              continue;
+           }
+           // 네 방향 모두 청소가 이미 되어있거나 벽이면서, 뒤쪽 방향이 벽이라 후진도 할 수 없는 경우에는 작동을 멈춘다.
+           else (room[back_rx - 1][back_ry - 1] == 1) {
+               stop = false;
+           }
+        }
+
+        /*// 탐색(try1)
         for (int i = 0; i < 4; i += 1) {
             // 왼쪽 방향에 있는 칸
             int new_rx, new_ry;
@@ -89,6 +130,8 @@ int main(void) {
             }
 
         }
+        
+
         // 1) 청소하고 break  -> 다음 while loop
         // 2) 모든 방향 fail
         // 뒤쪽 칸
@@ -105,8 +148,9 @@ int main(void) {
         }
         // 네 방향 모두 청소가 이미 되어있거나 벽이면서, 뒤쪽 방향이 벽이라 후진도 할 수 없는 경우에는 작동을 멈춘다.
         if (fail == 4 && room[back_rx - 1][back_ry - 1] == 1) {
-            stop = 1;
+            stop = false;
         }
+        */
 
     }
 
